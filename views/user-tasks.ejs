@@ -1,0 +1,26 @@
+<%- include('partials/header', { title: (user ? user.username + "'s Tasks" : "User Tasks"), user }) %>
+
+<div class="container">
+  <h1><%= user.username %>'s Tasks</h1>
+  
+  <% if (tasks.length === 0) { %>
+    <p>No tasks found.</p>
+  <% } else { %>
+    <ul class="list-group">
+      <% tasks.forEach(task => { %>
+        <li class="list-group-item">
+          <strong><%= task.title %></strong>
+          <br>
+          <small>Status: <%= task.status %> | Priority: <%= task.priority %></small>
+          <br>
+          <a href="/tasks/edit/<%= task._id %>" class="btn btn-sm btn-outline-primary">Edit</a>
+          <form action="/tasks/delete/<%= task._id %>" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this task?');">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

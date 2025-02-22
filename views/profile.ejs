@@ -7,16 +7,18 @@
     <% if (user.profilePicture) { %>
       <img src="<%= user.profilePicture %>" alt="Avatar" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
     <% } else { %>
-      <img src="/images/default-avatar.png" alt="Default Avatar" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+      <img src="/uploads/1739054348689.jpg" alt="Default Avatar" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
     <% } %>
   </div>
 
   <div class="profile-details mt-3">
     <p><strong>Username:</strong> <%= user.username %></p>
     <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Role:</strong> <%= user.role %></p>
   </div>
 
   <a href="/profile/edit" class="btn btn-primary mt-3">Edit Profile</a>
+  <% console.log("User EJS:", user); %>
 </div>
 
 <%- include('partials/footer') %>

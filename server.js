@@ -5,6 +5,8 @@ const session = require('express-session');
 const mongoose = require('./config/db'); // Connecting to MongoDB Atlas
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
+const taskRoutes = require('./routes/tasks');
+const userRoutes = require('./routes/users');
 const path = require('path');
 const app = express();
 
@@ -29,7 +31,8 @@ app.set('views', path.join(__dirname, 'views'));
 // Route handling
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
-
+app.use('/tasks', taskRoutes);
+app.use('/users', userRoutes);
 // Home route
 app.get('/', (req, res) => {
     res.render('index'); // Express will automatically add .ejs

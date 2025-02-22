@@ -1,0 +1,32 @@
+<%- include('partials/header', { title: 'Edit Task' }) %>
+
+<div class="container">
+  <h2>Edit Task</h2>
+  <form action="/tasks/update/<%= task._id %>" method="POST">
+    <label>Title:</label>
+    <input type="text" name="title" value="<%= task.title %>" required>
+
+    <label>Description:</label>
+    <textarea name="description"><%= task.description %></textarea>
+
+    <label>Due Date:</label>
+    <input type="date" name="dueDate" value="<%= task.dueDate ? task.dueDate.toISOString().split('T')[0] : '' %>">
+
+    <label>Status:</label>
+    <select name="status">
+      <option value="pending" <%= task.status === 'pending' ? 'selected' : '' %>>Pending</option>
+      <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>Completed</option>
+    </select>
+
+    <label>Priority:</label>
+    <select name="priority">
+      <option value="high" <%= task.priority === 'high' ? 'selected' : '' %>>High</option>
+      <option value="medium" <%= task.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+      <option value="low" <%= task.priority === 'low' ? 'selected' : '' %>>Low</option>
+    </select>
+
+    <button type="submit">Update</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

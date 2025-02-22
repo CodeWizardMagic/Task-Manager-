@@ -1,0 +1,10 @@
+<%- include('partials/header', { title: 'Manage Users', user: user }) %>
+
+<h2>Users List</h2>
+<ul>
+  <% users.forEach(user => { %>
+    <li>
+      <a href="/users/<%= user._id %>/tasks"><%= user.name %> - <%= user.email %></a>
+    </li>
+  <% }) %>
+</ul>

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const multer = require('multer');
 const path = require('path');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const { validate, userSchemas } = require('../middleware/validator');
 
 router.get('/setup-2fa', async (req, res) => {
     if (!req.session.user) {
@@ -54,7 +55,7 @@ router.get('/register', (req, res) => {
     res.render('register', { error: null });
 });
 
-router.post('/register', upload.single('profilePicture'), async (req, res) => {
+router.post('/register', upload.single('profilePicture'), validate(userSchemas.register), async (req, res) => {
     try {
         const { username, email, password, confirmPassword } = req.body;
 
@@ -114,7 +115,7 @@ router.get('/login', (req, res) => {
 });
 
 // Handle login
-router.post('/login', async (req, res) => {
+router.post('/login', validate(userSchemas.login), async (req, res) => {
     try {
         const { email, password, otp } = req.body;
 
@@ -210,6 +211,7 @@ router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/auth/login');
 });
+
 router.get('/profile', async (req, res) => {
     try {
         if (!req.session.userId) {

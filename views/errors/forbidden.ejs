@@ -1,0 +1,6 @@
+<%- include('error-layout', {
+    error: {
+        ...error,
+        message: error.message || 'You do not have permission to access this resource'
+    }
+}) %>

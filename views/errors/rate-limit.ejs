@@ -1,0 +1,6 @@
+<%- include('error-layout', {
+    error: {
+        ...error,
+        message: error.message || 'Too many requests. Please try again later'
+    }
+}) %>

@@ -1,0 +1,6 @@
+<%- include('error-layout', {
+    error: {
+        ...error,
+        message: error.message || 'An unexpected error occurred. Please try again later'
+    }
+}) %>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - <%= error.statusCode %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .error-container {
+            background-color: #fff5f5;
+            border: 1px solid #fc8181;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .error-code {
+            font-size: 3rem;
+            color: #e53e3e;
+            margin: 0;
+        }
+        .error-message {
+            color: #2d3748;
+            margin-top: 1rem;
+        }
+        .error-stack {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f7fafc;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.875rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-code">Error <%= error.statusCode %></h1>
+        <div class="error-message">
+            <p><%= error.message %></p>
+        </div>
+        <% if (error.stack && process.env.NODE_ENV === 'development') { %>
+            <div class="error-stack">
+                <%= error.stack %>
+            </div>
+        <% } %>
+    </div>
+    <a href="/" class="back-link">← Back to Home</a>
+</body>
+</html>

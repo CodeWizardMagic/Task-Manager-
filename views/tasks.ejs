@@ -18,7 +18,11 @@
   <% } else { %>
     <ul id="taskList" class="list-group mb-3">
       <% tasks.forEach(task => { %>
-        <li class="list-group-item d-flex justify-content-between align-items-center" data-status="<%= task.status %>" data-priority="<%= task.priority %>" data-dueDate="<%= task.dueDate ? new Date(task.dueDate).getTime() : 0 %>">
+        <li class="list-group-item d-flex justify-content-between align-items-center task-item" 
+            data-id="<%= task._id %>" 
+            data-status="<%= task.status %>" 
+            data-priority="<%= task.priority %>" 
+            data-dueDate="<%= task.dueDate ? new Date(task.dueDate).getTime() : 0 %>">
           <div style="width: 100%;">
             <strong class="task-title" data-id="<%= task._id %>" 
               style="cursor: pointer; color: blue; font-size: 1.1em;">
@@ -51,7 +55,8 @@
 
   <a href="/tasks/new" class="btn btn-primary w-100">+ Add Task</a>
 </div>
-<!-- Модальное окно -->
+
+<!-- Modal Window -->
 <div id="taskModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -65,91 +70,41 @@
 </div>
 
 <script>
-  function startCountdown(id, dueDate) {
-    const timerElement = document.getElementById("timer-" + id);
-    if (!timerElement) return;
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("taskModal");
+    const closeModal = document.querySelector(".close");
+    const tasks = <%- JSON.stringify(tasks) %>;
 
-    function updateTimer() {
-      const now = new Date();
-      const deadline = new Date(dueDate);
-      const diff = deadline - now;
+    document.querySelectorAll(".task-title").forEach(title => {
+      title.addEventListener("click", function () {
+        const taskId = this.getAttribute("data-id");
+        const task = tasks.find(t => t._id === taskId);
 
-      if (diff <= 0) {
-        timerElement.textContent = "⏳ Deadline passed!";
-        timerElement.style.color = "red";
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      timerElement.textContent = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  }
-
-  <% tasks.forEach(task => { %>
-    <% if (task.dueDate) { %>
-      startCountdown("<%= task._id %>", "<%= task.dueDate.toISOString() %>");
-    <% } %>
-  <% }) %>
-
-  // Открытие модального окна с информацией о задаче
-  const tasks = <%- JSON.stringify(tasks) %>;
-  const modal = document.getElementById("taskModal");
-  const closeModal = document.getElementsByClassName("close")[0];
-
-  document.querySelectorAll(".task-title").forEach(title => {
-    title.addEventListener("click", function () {
-      const taskId = this.getAttribute("data-id");
-      const task = tasks.find(t => t._id === taskId);
-
-      document.getElementById("modal-title").textContent = task.title;
-      document.getElementById("modal-description").textContent = task.description || "No description";
-      document.getElementById("modal-status").textContent = task.status;
-      document.getElementById("modal-priority").textContent = task.priority;
-      document.getElementById("modal-dueDate").textContent = task.dueDate ? new Date(task.dueDate).toDateString() : "No deadline";
-      document.getElementById("modal-createdAt").textContent = new Date(task.createdAt).toDateString();
-
-      modal.style.display = "flex";
+        if (task) {
+          document.getElementById("modal-title").textContent = task.title;
+          document.getElementById("modal-description").textContent = task.description || "No description";
+          document.getElementById("modal-status").textContent = task.status;
+          document.getElementById("modal-priority").textContent = task.priority;
+          document.getElementById("modal-dueDate").textContent = task.dueDate ? new Date(task.dueDate).toDateString() : "No deadline";
+          document.getElementById("modal-createdAt").textContent = new Date(task.createdAt).toDateString();
+          modal.style.display = "flex";
+        }
+      });
     });
-  });
 
-  closeModal.onclick = function () {
-    modal.style.display = "none";
-  };
-
-  window.onclick = function (event) {
-    if (event.target == modal) {
+    closeModal.addEventListener("click", () => {
       modal.style.display = "none";
-    }
-  };
-  document.getElementById("sortTasks").addEventListener("change", function () {
-    const criteria = this.value;
-    const taskList = document.getElementById("taskList");
-    const tasks = Array.from(taskList.children);
-
-    tasks.sort((a, b) => {
-      if (criteria === "status") {
-        return a.getAttribute("data-status").localeCompare(b.getAttribute("data-status"));
-      } else if (criteria === "priority") {
-        const priorityOrder = { "high": 1, "medium": 2, "low": 3 };
-        return priorityOrder[a.getAttribute("data-priority")] - priorityOrder[b.getAttribute("data-priority")];
-      } else if (criteria === "dueDate") {
-        return a.getAttribute("data-dueDate") - b.getAttribute("data-dueDate");
-      }
     });
 
-    tasks.forEach(task => taskList.appendChild(task));
+    window.addEventListener("click", event => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
   });
 </script>
 
 <style>
-  /* Стили для модального окна */
   .modal {
     display: none;
     position: fixed;
@@ -171,6 +126,7 @@
     max-width: 400px;
     text-align: left;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
   }
 
   .close {
@@ -183,19 +139,6 @@
 
   .close:hover {
     color: red;
-  }
-
-  /* Улучшенный список задач */
-  .list-group-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-  }
-
-  .btn-group {
-    display: flex;
-    gap: 8px;
   }
 </style>
 

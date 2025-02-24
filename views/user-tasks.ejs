@@ -9,7 +9,9 @@
     <ul class="list-group">
       <% tasks.forEach(task => { %>
         <li class="list-group-item">
-          <strong><%= task.title %></strong>
+          <strong class="task-title" data-id="<%= task._id %>" style="cursor: pointer; color: blue;">
+            <%= task.title %>
+          </strong>
           <br>
           <small>Status: <%= task.status %> | Priority: <%= task.priority %></small>
           <br>
@@ -22,5 +24,87 @@
     </ul>
   <% } %>
 </div>
+
+<!-- Модальное окно -->
+<div id="taskModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="modal-title"></h2>
+    <p><strong>Description:</strong> <span id="modal-description"></span></p>
+    <p><strong>Status:</strong> <span id="modal-status"></span></p>
+    <p><strong>Priority:</strong> <span id="modal-priority"></span></p>
+    <p><strong>Due Date:</strong> <span id="modal-dueDate"></span></p>
+    <p><strong>Created At:</strong> <span id="modal-createdAt"></span></p>
+  </div>
+</div>
+
+<script>
+  const tasks = <%- JSON.stringify(tasks) %>;
+  const modal = document.getElementById("taskModal");
+  const closeModal = document.getElementsByClassName("close")[0];
+
+  document.querySelectorAll(".task-title").forEach(title => {
+    title.addEventListener("click", function () {
+      const taskId = this.getAttribute("data-id");
+      const task = tasks.find(t => t._id === taskId);
+
+      document.getElementById("modal-title").textContent = task.title;
+      document.getElementById("modal-description").textContent = task.description || "No description";
+      document.getElementById("modal-status").textContent = task.status;
+      document.getElementById("modal-priority").textContent = task.priority;
+      document.getElementById("modal-dueDate").textContent = task.dueDate ? new Date(task.dueDate).toDateString() : "No deadline";
+      document.getElementById("modal-createdAt").textContent = new Date(task.createdAt).toDateString();
+
+      modal.style.display = "flex";
+    });
+  });
+
+  closeModal.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>
+
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: red;
+  }
+</style>
 
 <%- include('partials/footer') %>

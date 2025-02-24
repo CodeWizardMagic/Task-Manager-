@@ -29,12 +29,14 @@
               <strong>Status:</strong> <%= task.status %> • <strong>Priority:</strong> <%= task.priority %>
             </small>
             <br>
-            <small class="text-muted">
-              <strong>Due:</strong> <%= task.dueDate ? task.dueDate.toISOString().split('T')[0] : 'No deadline' %>  
-              <% if (task.dueDate) { %>
-                <span id="timer-<%= task._id %>" class="text-danger"></span>
-              <% } %>
-            </small>
+            <% if (task.status !== 'completed') { %>
+              <small class="text-muted">
+                <strong>Due:</strong> <%= task.dueDate ? task.dueDate.toISOString().split('T')[0] : 'No deadline' %>  
+                <% if (task.dueDate) { %>
+                  <span id="timer-<%= task._id %>" class="text-danger"></span>
+                <% } %>
+              </small>
+            <% } %>
           </div>
           <div class="btn-group">
             <a href="/tasks/edit/<%= task._id %>" class="btn btn-sm btn-outline-primary">Edit</a>

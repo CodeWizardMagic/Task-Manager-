@@ -136,8 +136,9 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true, // Prevent XSS
+        secure: false,  
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: 'strict' // Prevent CSRF
+        sameSite: 'lax' // Prevent CSRF
     },
     rolling: true,
     name: 'sessionId' // Change default cookie name for security

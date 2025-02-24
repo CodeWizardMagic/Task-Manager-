@@ -170,8 +170,24 @@ router.post('/login', validate(userSchemas.login), async (req, res) => {
         };
 
         console.log("✅ User logged in:", req.session.user);
+        
+        req.session.save(err => {
+            if (err) {
+                console.error("🔥 Session save error:", err);
+                return res.render('login', { 
+                    error: 'Session error. Try again.', 
+                    email, 
+                    showOTP: false 
+                });
+            }
+            
+            if (!res.headersSent) { 
+                res.redirect('/profile');
+            }
+        });
+        
+        
 
-        res.redirect('/profile');
     } catch (err) {
         console.error("🔥 Login error:", err);
         res.render('login', { 
@@ -208,9 +224,15 @@ router.post('/enable-2fa', async (req, res) => {
 
 // Logout
 router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/auth/login');
+    req.session.destroy(err => {
+        if (err) {
+            console.error("Error", err);
+            return res.status(500).send("Error logout");
+        }
+        res.redirect('/auth/login');
+    });
 });
+
 
 router.get('/profile', async (req, res) => {
     try {
@@ -219,7 +241,6 @@ router.get('/profile', async (req, res) => {
             return res.redirect('/auth/login');
         }
 
-        // Запрос всех нужных полей
         const user = await User.findById(req.session.userId).select("username email role profilePicture");
 
         if (!user) {
@@ -227,7 +248,7 @@ router.get('/profile', async (req, res) => {
             return res.redirect('/auth/login');
         }
 
-        console.log("✅ User from DB:", user); // Проверка в консоли
+        console.log("✅ User from DB:", user);
 
         res.render('profile', { user });
     } catch (err) {

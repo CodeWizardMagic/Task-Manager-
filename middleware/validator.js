@@ -69,11 +69,18 @@ const taskSchemas = {
             .messages({
                 'date.min': 'Due date must be in the future'
             }),
+        status: Joi.string()
+            .valid('new', 'in progress', 'completed')
+            .required()
+            .messages({
+                'any.only': 'Invalid status value'
+            }),
         priority: Joi.string()
             .valid('low', 'medium', 'high')
             .default('medium')
     })
 };
+
 
 // Validation middleware factory
 const validate = (schema) => {

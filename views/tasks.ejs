@@ -22,7 +22,7 @@
             data-id="<%= task._id %>" 
             data-status="<%= task.status %>" 
             data-priority="<%= task.priority %>" 
-            data-dueDate="<%= task.dueDate ? new Date(task.dueDate).getTime() : 0 %>">
+            data-dueDate="<%= task.dueDate ? new Date(task.dueDate).toLocaleString() : '' %>">
           <div style="width: 100%;">
             <strong class="task-title" data-id="<%= task._id %>" 
               style="cursor: pointer; color: blue; font-size: 1.1em;">
@@ -55,8 +55,7 @@
 
   <a href="/tasks/new" class="btn btn-primary w-100">+ Add Task</a>
 </div>
-
-<!-- Modal Window -->
+]
 <div id="taskModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -70,6 +69,38 @@
 </div>
 
 <script>
+  function startCountdown(id, dueDate) {
+    const timerElement = document.getElementById("timer-" + id);
+    if (!timerElement) return;
+
+    function updateTimer() {
+      const now = new Date();
+      const deadline = new Date(dueDate);
+      const diff = deadline - now;
+
+      if (diff <= 0) {
+        timerElement.textContent = "⏳ Deadline passed!";
+        timerElement.style.color = "red";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      timerElement.textContent = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
+    }
+        updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  <% tasks.forEach(task => { %>
+    <% if (task.dueDate) { %>
+      startCountdown("<%= task._id %>", "<%= task.dueDate.toISOString() %>");
+    <% } %>
+  <% }) %>
+
   document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("taskModal");
     const closeModal = document.querySelector(".close");
@@ -101,6 +132,25 @@
         modal.style.display = "none";
       }
     });
+  });
+  
+  document.getElementById("sortTasks").addEventListener("change", function () {
+    const criteria = this.value;
+    const taskList = document.getElementById("taskList");
+    const tasks = Array.from(taskList.children);
+
+    tasks.sort((a, b) => {
+      if (criteria === "status") {
+        return a.getAttribute("data-status").localeCompare(b.getAttribute("data-status"));
+      } else if (criteria === "priority") {
+        const priorityOrder = { "high": 1, "medium": 2, "low": 3 };
+        return priorityOrder[a.getAttribute("data-priority")] - priorityOrder[b.getAttribute("data-priority")];
+      } else if (criteria === "dueDate") {
+        return parseInt(a.getAttribute("data-dueDate")) - parseInt(b.getAttribute("data-dueDate"));
+      }
+    });
+
+    tasks.forEach(task => taskList.appendChild(task));
   });
 </script>
 
